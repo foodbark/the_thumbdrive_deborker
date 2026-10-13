@@ -9,8 +9,8 @@ Let me introduce you to the Thumbdrive Deborker. The Thumbdrive Deborker
 does just what it says it does: it deborks borkered thumbdrives.
 
 It works by zeroing out the first 10 MB of the drive. That sounds crude, and
-it is, but it's the whole trick. Imaging tools like Etcher and Rufus often
-leave a stick as a "superfloppy": no partition table at all, just a raw
+it is, but it's the whole trick. Imaging tools like balenaEtcher (the one
+that got us) and Rufus leave a stick as a "superfloppy": no partition table at all, just a raw
 filesystem (or a half-written ISO9660 header) starting at sector 0, sometimes
 with a stale GPT behind it. Windows looks at that, decides the drive is
 "RAW" or "Unknown", and Disk Management, `format`, and even `diskpart clean`
@@ -193,6 +193,7 @@ Get-Disk | Where-Object BusType -eq 'USB' | Get-Partition -PartitionNumber 1 |
 - [foodbark](https://github.com/foodbark): deborker of the drives.
 - [yusefmarra](https://github.com/yusefmarra): borker of the drives. Every
   project needs a problem, and he supplied it.
+- [balenaEtcher](https://etcher.balena.io/): the weapon.
 
 ## License
 
