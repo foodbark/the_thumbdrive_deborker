@@ -140,7 +140,7 @@ def close_handles(handles):
 
 
 def zero_disk_head(disk_number, num_bytes=HEAD_WIPE_BYTES):
-    """Write zeros over the first num_bytes of \\.\PhysicalDriveN (dd equivalent)."""
+    r"""Write zeros over the first num_bytes of \\.\PhysicalDriveN (dd equivalent)."""
     device_path = rf"\\.\PhysicalDrive{disk_number}"
     handles = lock_and_dismount_volumes(get_volume_device_paths(disk_number))
     try:
@@ -274,4 +274,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n[-] Aborted.")
+        sys.exit(130)
