@@ -187,3 +187,7 @@ usbipd unbind --busid <BUSID>
 Get-Disk | Where-Object BusType -eq 'USB' | Get-Partition -PartitionNumber 1 |
     Set-Partition -GptType '{ebd0a0a2-b9e5-4433-87c0-68b6b72699c7}'
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
