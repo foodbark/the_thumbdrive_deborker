@@ -188,6 +188,12 @@ Get-Disk | Where-Object BusType -eq 'USB' | Get-Partition -PartitionNumber 1 |
     Set-Partition -GptType '{ebd0a0a2-b9e5-4433-87c0-68b6b72699c7}'
 ```
 
+## Credits
+
+- [foodbark](https://github.com/foodbark): deborker of the drives.
+- [yusefmarra](https://github.com/yusefmarra): borker of the drives. Every
+  project needs a problem, and he supplied it.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
