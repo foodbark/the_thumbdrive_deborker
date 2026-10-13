@@ -48,16 +48,105 @@ disk that has a mounted volume on it. `deborker.py` handles that for you.
 
 ## Usage
 
-Run from an **Administrator** terminal on Windows:
+### Requirements
+
+- Windows 10 or 11.
+- Python 3.8 or newer. Get it from [python.org](https://www.python.org/downloads/)
+  or the Microsoft Store. No extra packages are needed; the script only uses
+  the standard library plus PowerShell, which Windows already has.
+- An **Administrator** terminal. Raw disk access is refused otherwise.
+- The borked drive plugged directly into the Windows machine. If you have
+  attached it to WSL with usbipd, detach it first (see step 2).
+
+### Step by step
+
+1. **Get the script.** Either clone the repo:
+
+   ```
+   git clone https://github.com/foodbark/the_thumbdrive_deborker.git
+   cd the_thumbdrive_deborker
+   ```
+
+   or just download `deborker.py` from GitHub and put it somewhere handy.
+
+2. **Make sure Windows owns the drive.** If you have ever run
+   `usbipd attach` on it, give it back to Windows from an elevated PowerShell:
+
+   ```powershell
+   usbipd list                       # find the BUSID of the stick
+   usbipd detach --busid <BUSID>
+   usbipd unbind --busid <BUSID>
+   ```
+
+   Skip this if you have never used usbipd.
+
+3. **Open an Administrator terminal.** Right-click Windows Terminal,
+   PowerShell, or Command Prompt and choose *Run as administrator*. A
+   regular terminal will print an error and exit.
+
+4. **Run the script.**
+
+   ```
+   python deborker.py
+   ```
+
+5. **Pick the disk.** The script lists every USB disk Windows can see and
+   asks for a disk number. Match it by name and size. It will refuse any
+   number that is not in its USB list, so you cannot accidentally pick your
+   system drive, but still look twice.
+
+6. **Enter a label** (or press Enter for `PNYUNBORKED`). Up to 11 letters,
+   digits, spaces, dashes or underscores; anything else is stripped.
+
+7. **Type `YES`** (all caps) at the warning. Anything else aborts with
+   nothing touched. After `YES` the drive is wiped, re-partitioned, and
+   formatted. The drive letter is printed at the end and File Explorer
+   usually opens it on its own.
+
+### What a run looks like
 
 ```
-python deborker.py
+=== The Thumb Drive De-Borker ===
+
+Detected USB Drives:
+  [2] PNY USB 3.0 FD (57.74 GB) - Style: RAW
+
+Enter Disk Number to de-bork: 2
+Enter volume label (max 11 chars, default: PNYUNBORKED):
+
+[!] WARNING: Entire contents of Disk 2 (PNY USB 3.0 FD) will be destroyed.
+    It will be re-created as GPT + exFAT labeled 'PNYUNBORKED'.
+Type 'YES' to proceed: YES
+[*] Locked and dismounted \\.\E:
+[*] Opening raw device \\.\PhysicalDrive2...
+[*] Wiped 10MB / 10MB...
+[+] First 10MB zeroed; old partition headers are gone.
+[*] Reinitializing as GPT...
+[*] Partitioning and formatting as exFAT labeled 'PNYUNBORKED'...
+E: PNYUNBORKED exFAT 57.72 GB
+
+[+] Drive successfully de-borked and mounted.
 ```
 
-Pick the disk number, enter a label (11 chars max), and type `YES` to confirm.
+**Warning:** this destroys everything on the selected disk. There is no
+undo. Double-check the disk number before typing `YES`.
 
-**Warning:** this destroys everything on the selected disk. Double-check the
-disk number before confirming.
+### Troubleshooting
+
+- **"This script requires administrator privileges"**: the terminal is not
+  elevated. Close it and reopen with *Run as administrator*.
+- **"No USB disks detected by Windows"**: the stick is not plugged in, is
+  still attached to WSL via usbipd (step 2), or is so dead that Windows
+  does not enumerate it at all. Check Device Manager under *Disk drives*.
+- **"Windows refused the raw write"**: something still has a volume on the
+  disk open. Close File Explorer windows pointing at it, stop any antivirus
+  scan, unplug and replug the stick, and run again.
+- **You wanted FAT32 but got exFAT**: the drive is over 32 GB and Windows
+  will not format FAT32 that large. Use the manual WSL recipe below, where
+  `mkfs.vfat` has no such limit.
+- **Mac still shows it as unreadable**: unplug, replug. If it persists, the
+  format did not complete; check the last lines of the script output for a
+  PowerShell error.
 
 ## Tests
 
